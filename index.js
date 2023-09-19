@@ -1,4 +1,6 @@
-console.log("we are online!")
+let time = new Date()
+
+console.log(`we are online at ${time}!`)
 
 //#region THE PEOPLE
 
@@ -17,7 +19,7 @@ class Player extends Character {
   constructor(name, descripion, strength, wisdom, currency) {
     super(name, descripion, height, strength, wisdom);
     this.health = 100;
-    this.weapons = [];
+    this.items = [];
     this.currency = currency;
   }
 }
@@ -72,6 +74,15 @@ class Place {
   describe() {
     return `You are in a ${this.name}, which is ${this.description}.`
   }
+
+  move(direction) {
+    if (this.linkedPlaces[direction]){
+      console.log("direction valid")
+      return this.linkedPlaces[direction]
+    } else {
+      return this
+    }
+  }
 }
 
 class OutsidePlace extends Place {
@@ -91,14 +102,14 @@ class OutsidePlace extends Place {
 
 class SecretPlace extends Place {
   constructor(name, description) {
-
+    // TODO - make secret place
   }
 }
 //#endregion
 
 //make some places
 
-const garden = new OutsidePlace("Garden", "not too large, but with lots of lush plants, an ideal home for a slug", "a fine rain is falling")
+const garden = new OutsidePlace("Garden", "not too large, but with lots of lush plants, an ideal home for a slug", "A fine rain is falling")
 
 // garden.weather = "sunshine" ====== this is how we use the setter method to change the weather.
 
@@ -144,9 +155,19 @@ const populatePlaceDetails = (place) => {
 
 
 const startGame = () => {
-  let currentRoom = garden;
-
+  let currentRoom = "";
   populatePlaceDetails(garden);
+
+  let command = "";
+
+  const userInput = document.getElementById("userText")
+
+  userInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      command = userInput.value
+      console.log(command)
+    }
+  })
 
 }
 
