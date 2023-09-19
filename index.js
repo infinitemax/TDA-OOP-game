@@ -8,9 +8,10 @@ console.log(`we are online at ${time}!`)
 class Character {
   constructor(name, descripion, strength, wisdom) {
     this.name = name;
-    this.descripion = age;
+    this.descripion = descripion;
     this.strength = strength;
     this.wisdom = wisdom;
+    this.isEnemy;
   }
 }
 
@@ -21,14 +22,15 @@ class Player extends Character {
     this.health = 100;
     this.items = [];
     this.currency = currency;
+    this.isEnemy = false;
   }
 }
 
 // a class of enemies that we might meet
 class Enemy extends Character {
-  constructor(name, descripion, strength, wisdom, isEnemy, species, weapon) {
+  constructor(name, descripion, strength, wisdom, species, weapon) {
     super(name, descripion, strength, wisdom);
-    this.isEnemy = isEnemy;
+    this.isEnemy = true;
     this.species = species;
     this.weapon = weapon;
   }
@@ -41,13 +43,12 @@ class Friend extends Character {
     descripion,
     strength,
     wisdom,
-    isEnemy,
     species,
     itemToGive,
     knowledgeToGive
   ) {
     super(name, descripion, strength, wisdom);
-    this.isEnemy = isEnemy;
+    this.isEnemy = false;
     this.species = species;
     this.itemToGive = itemToGive;
     this.knowledgeToGive = knowledgeToGive;
@@ -57,6 +58,7 @@ class Friend extends Character {
 //#endregion
 
 //#region THE PLACES AND THINGS
+
 
 class Place {
   constructor(name, description) {
@@ -71,14 +73,19 @@ class Place {
     this.linkedPlaces[direction] = place;
   }
 
+  linkItem(item) {
+    this.linkedItems.push(item)
+  }
+
   describePlace() {
     return `You are in a ${this.name}, which is ${this.description}.`
   }
 
-  describeExits() {
-    console.log(this.linkedPlaces.east.name)
+  describeExits(place) {
+    console.log(this.linkedPlaces)
   }
 
+  
 
   // a command method that takes the player input and uses it to move() the player.
   command() {
@@ -93,7 +100,7 @@ class Place {
         console.log(command)
         if (directions.includes(command)){
           currentRoom = currentRoom.move(command)
-          populatePlaceDetails(currentRoom);
+          currentRoom.populatePlaceDetails();
           userInput.value = "";
         } else {
           alert("Invalid command, please input 'north', 'south', 'east' or 'west'")
@@ -111,6 +118,33 @@ class Place {
       alert("the way is blocked, try again")
       return this
     }
+  }
+
+  // a method to populate the html, based on the current room
+  populatePlaceDetails() {
+    // describe the place
+    const placeDetails = "<p>" + this.describePlace() + "</p>"
+  
+    document.getElementById("placeDescription").innerHTML = placeDetails;
+  
+    //describe the items
+
+
+
+
+    // character speaks:
+    // check if linked characters obj is empty!
+    // if it is, say the room is empty
+    // if not, the character says something.
+    let characterMessage = "";
+  
+    if (Object.keys(this.linkedCharacters).length === 0) {
+      characterMessage = `The ${this.name} is empty`
+    } else {
+      characterMessage = `The ${this.name} contains a .... who looks at you and says ....`
+    }
+  
+    
   }
 }
 
@@ -134,7 +168,8 @@ class SecretPlace extends Place {
     // TODO - make secret place
   }
 }
-//#endregion
+
+
 
 //make some places
 
@@ -162,30 +197,37 @@ diningRoom.linkPlace("east", hallway);
 diningRoom.linkPlace("south", livingRoom);
 livingRoom.linkPlace("north", diningRoom);
 
+//#endregion
 
-const populatePlaceDetails = (place) => {
-  // character speaks:
-  // check if linked characters obj is empty!
-  // if it is, say the room is empty
-  // if not, the character says something.
-  let characterMessage = "";
 
-  if (Object.keys(place.linkedCharacters).length === 0) {
-    characterMessage = `The ${place.name} is empty`
-  } else {
-    characterMessage = `The ${place.name} contains a .... who looks at you and says ....`
+//#region THE ITEMS
+
+class Item {
+  constructor(name, power){
+    this.name = name;
+    this.powers = power;
   }
-
-  const placeDetails = "<p>" + place.describePlace() + "</p>"
-
-  document.getElementById("placeDescription").innerHTML = placeDetails;
-
 }
+
+// make some items
+
+const key = new Item ("key", "unlocking")
+
+
+// link the items
+garden.linkItem(key);
+
+
+//#endregion
+
+
+
+// PLAYING THE GAME
 
 let currentRoom = garden;
 
 const startGame = () => {
-  populatePlaceDetails(currentRoom);
+  currentRoom.populatePlaceDetails();
 
   currentRoom.command()
 
