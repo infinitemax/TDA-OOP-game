@@ -4,23 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div>
 
-        <div id="gamearea">
-            <div id="details">
+        <div id="gamearea" class="grid gap-4 grid-cols-1 sm:grid-cols-12">
+            <div id="details" class="sm:col-span-8 bg-gray-200 p-2">
                 <div>
-                    <p>Place:</p>
+                    <p class="descriptionHeading">Place:</p>
                     <p id="placeDescription"></p>
-                    <p>Items:</p>
+                    <p class="descriptionHeading">Items:</p>
                     <p id="itemDescription"></p>
-                    <p>People:</p>
+                    <p class="descriptionHeading">People:</p>
                     <p id="characterDescription"></p>
-                    <p>Exits:</p>
+                    <p class="descriptionHeading">Exits:</p>
                     <p id="exitsDescription"></p>
-                    <input type="text" id="userText">
+                    <p class="descriptionHeading">What next?</p>
+                    <input type="text" id="userText" >
                 </div>
+            </div>
+            <div id="playerDetails" class="sm:col-span-4 bg-gray-200 p-2">
+                <p class="font-bold">Player stats</p>
+                <hr class="h-1 my-1  bg-blue-900">
+                <p class="descriptionHeading">Name: <span id="playerName"></span></p>
+                <p id="playerDescription" class=""></p>
+                <p class="descriptionHeading">Moisture level: <span id="playerMoisture"></span></p>
+                <p class="descriptionHeading">Items:</p>
+                <p id="playerItems"></p>
             </div>
         </div>
 
