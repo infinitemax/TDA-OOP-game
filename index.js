@@ -71,15 +71,44 @@ class Place {
     this.linkedPlaces[direction] = place;
   }
 
-  describe() {
+  describePlace() {
     return `You are in a ${this.name}, which is ${this.description}.`
   }
 
+  describeExits() {
+    console.log(this.linkedPlaces.east.name)
+  }
+
+
+  // a command method that takes the player input and uses it to move() the player.
+  command() {
+    let command = "";
+    const directions = ["north", "south", "east", "west"]
+  
+    const userInput = document.getElementById("userText")
+    
+    userInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        command = userInput.value.toLowerCase()
+        console.log(command)
+        if (directions.includes(command)){
+          currentRoom = currentRoom.move(command)
+          populatePlaceDetails(currentRoom);
+          userInput.value = "";
+        } else {
+          alert("Invalid command, please input 'north', 'south', 'east' or 'west'")
+        }
+      }
+    })
+  }
+
+  // a move method, moves the player to a valid place, called by command() method.
   move(direction) {
     if (this.linkedPlaces[direction]){
       console.log("direction valid")
       return this.linkedPlaces[direction]
     } else {
+      alert("the way is blocked, try again")
       return this
     }
   }
@@ -147,27 +176,18 @@ const populatePlaceDetails = (place) => {
     characterMessage = `The ${place.name} contains a .... who looks at you and says ....`
   }
 
-  const placeDetails = "<p>" + place.describe() + "</p>"
+  const placeDetails = "<p>" + place.describePlace() + "</p>"
 
   document.getElementById("placeDescription").innerHTML = placeDetails;
 
 }
 
+let currentRoom = garden;
 
 const startGame = () => {
-  let currentRoom = "";
-  populatePlaceDetails(garden);
+  populatePlaceDetails(currentRoom);
 
-  let command = "";
-
-  const userInput = document.getElementById("userText")
-
-  userInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      command = userInput.value
-      console.log(command)
-    }
-  })
+  currentRoom.command()
 
 }
 
