@@ -1,0 +1,19 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    padding: 1.5rem
+}
+
+p {
+    margin-bottom: .75rem;
+}
+
+input {
+    border-width: 1px;
+    border-color: black;
+    caret-color: black;
+    caret-shape: block;
+}
+
+.descriptionHeading {
+    font-weight: 700;
+}
