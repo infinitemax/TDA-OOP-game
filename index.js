@@ -1,4 +1,6 @@
-console.log("we are online!")
+let time = new Date()
+
+console.log(`we are online at ${time}!`)
 
 //#region THE PEOPLE
 
@@ -17,7 +19,7 @@ class Player extends Character {
   constructor(name, descripion, strength, wisdom, currency) {
     super(name, descripion, height, strength, wisdom);
     this.health = 100;
-    this.weapons = [];
+    this.items = [];
     this.currency = currency;
   }
 }
@@ -69,8 +71,46 @@ class Place {
     this.linkedPlaces[direction] = place;
   }
 
-  describe() {
+  describePlace() {
     return `You are in a ${this.name}, which is ${this.description}.`
+  }
+
+  describeExits() {
+    console.log(this.linkedPlaces.east.name)
+  }
+
+
+  // a command method that takes the player input and uses it to move() the player.
+  command() {
+    let command = "";
+    const directions = ["north", "south", "east", "west"]
+  
+    const userInput = document.getElementById("userText")
+    
+    userInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        command = userInput.value.toLowerCase()
+        console.log(command)
+        if (directions.includes(command)){
+          currentRoom = currentRoom.move(command)
+          populatePlaceDetails(currentRoom);
+          userInput.value = "";
+        } else {
+          alert("Invalid command, please input 'north', 'south', 'east' or 'west'")
+        }
+      }
+    })
+  }
+
+  // a move method, moves the player to a valid place, called by command() method.
+  move(direction) {
+    if (this.linkedPlaces[direction]){
+      console.log("direction valid")
+      return this.linkedPlaces[direction]
+    } else {
+      alert("the way is blocked, try again")
+      return this
+    }
   }
 }
 
@@ -91,14 +131,14 @@ class OutsidePlace extends Place {
 
 class SecretPlace extends Place {
   constructor(name, description) {
-
+    // TODO - make secret place
   }
 }
 //#endregion
 
 //make some places
 
-const garden = new OutsidePlace("Garden", "not too large, but with lots of lush plants, an ideal home for a slug", "a fine rain is falling")
+const garden = new OutsidePlace("Garden", "not too large, but with lots of lush plants, an ideal home for a slug", "A fine rain is falling")
 
 // garden.weather = "sunshine" ====== this is how we use the setter method to change the weather.
 
@@ -136,17 +176,18 @@ const populatePlaceDetails = (place) => {
     characterMessage = `The ${place.name} contains a .... who looks at you and says ....`
   }
 
-  const placeDetails = "<p>" + place.describe() + "</p>"
+  const placeDetails = "<p>" + place.describePlace() + "</p>"
 
   document.getElementById("placeDescription").innerHTML = placeDetails;
 
 }
 
+let currentRoom = garden;
 
 const startGame = () => {
-  let currentRoom = garden;
+  populatePlaceDetails(currentRoom);
 
-  populatePlaceDetails(garden);
+  currentRoom.command()
 
 }
 
