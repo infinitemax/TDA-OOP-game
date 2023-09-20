@@ -19,7 +19,7 @@ class Character {
 class Player extends Character {
   constructor(name, description, strength, wisdom, currency) {
     super(name, description, strength, wisdom);
-    this.moisture = 10;
+    this.moisture = 100;
     this.items = [];
     this.currency = currency;
     this.isEnemy = false;
@@ -351,7 +351,9 @@ const gameOver = (condition) => {
     e.classList.add("hidden");
   })
   
-  document.getElementById("gameEndText").innerHTML = `Your game is over. ${condition}`
+  document.getElementById("gameEndTitle").innerHTML = `Your game is over.`
+
+  document.getElementById("gameEndText").innerHTML = `${condition}`
   
   document.getElementById("restartButton").classList.remove("hidden");
 
