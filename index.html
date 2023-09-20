@@ -13,16 +13,18 @@
         <div id="gamearea" class="grid gap-4 grid-cols-1 sm:grid-cols-12">
             <div id="details" class="sm:col-span-8 bg-gray-200 p-2">
                 <div>
-                    <p class="descriptionHeading">Place:</p>
-                    <p id="placeDescription"></p>
-                    <p class="descriptionHeading">Items:</p>
-                    <p id="itemDescription"></p>
-                    <p class="descriptionHeading">People:</p>
-                    <p id="characterDescription"></p>
-                    <p class="descriptionHeading">Exits:</p>
-                    <p id="exitsDescription"></p>
-                    <p class="descriptionHeading">What next?</p>
-                    <input type="text" id="userText" >
+                    <h2 id="gameEndText"></h2>
+                    <button id="restartButton" class="hidden" onclick="window.location.reload()">Retry</button>
+                    <p class="descriptionHeading gamePlay">Place:</p>
+                    <p id="placeDescription" class="gamePlay"></p>
+                    <p class="descriptionHeading gamePlay">Items:</p>
+                    <p id="itemDescription" class="gamePlay"></p>
+                    <p class="descriptionHeading gamePlay">People:</p>
+                    <p id="characterDescription" class="gamePlay"></p>
+                    <p class="descriptionHeading gamePlay">Exits:</p>
+                    <p id="exitsDescription" class="gamePlay"></p>
+                    <p class="descriptionHeading gamePlay">What next?</p>
+                    <input type="text" id="userText"  class="gamePlay">
                 </div>
             </div>
             <div id="playerDetails" class="sm:col-span-4 bg-gray-200 p-2">

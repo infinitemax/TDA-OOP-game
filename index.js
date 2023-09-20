@@ -19,10 +19,15 @@ class Character {
 class Player extends Character {
   constructor(name, description, strength, wisdom, currency) {
     super(name, description, strength, wisdom);
-    this.moisture = 100;
+    this.moisture = 10;
     this.items = [];
     this.currency = currency;
     this.isEnemy = false;
+    this.dryOutRate = 5;
+    this.endConditions = {
+      driedOut: "You ran out of moisture, causing you to fall into a state of suspended animation. Later that evening a human picks you up and puts you back in the garden.",
+      captured : "You were unable to escape the human, who scooped you up and took you back outside."
+    }
   }
 
 
@@ -69,9 +74,16 @@ class Player extends Character {
   }
 
   dryOut() {
-    this.moisture -= dryOutRate;
-    console.log(this.moisture)
+    this.moisture -= this.dryOutRate;
+    
+    if (this.moisture === 0) {
+      gameOver(this.endConditions.driedOut);
+    }
+
+
   }
+
+
 
 
 }
@@ -164,6 +176,7 @@ class Place {
 
   // a command method that takes the player input and uses it to move() the player.
   command() {
+
     let command = "";
     const directions = ["north", "south", "east", "west"];
 
@@ -202,7 +215,7 @@ class Place {
     
   }
 
-  // a method to populate the html, based on the current room
+  // a method to populate the html, based on the current place
   populatePlaceDetails() {
     // describe the place
     const placeDetails = "<p>" + this.describePlace() + "</p>";
@@ -321,7 +334,6 @@ kitchen.linkItem(salt);
 // PLAYING THE GAME
 
 let currentRoom = garden;
-let dryOutRate = 5;
 
 const startGame = () => {
   // populate the screen
@@ -332,4 +344,20 @@ const startGame = () => {
   currentRoom.command();
 };
 
+const gameOver = (condition) => {
+  const gameText = document.querySelectorAll(".gamePlay")
+
+  gameText.forEach(e => {
+    e.classList.add("hidden");
+  })
+  
+  document.getElementById("gameEndText").innerHTML = `Your game is over. ${condition}`
+  
+  document.getElementById("restartButton").classList.remove("hidden");
+
+  
+}
+
+
 startGame();
+
