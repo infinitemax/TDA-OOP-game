@@ -150,7 +150,7 @@ class Place {
     if (this.linkedItems.length === 0) {
       return "There appears to be nothing of value here.";
     } else {
-      return `You can see a ${this.linkedItems[0].name} which looks like it might be useful.`;
+      return `You can see a <strong>${this.linkedItems[0].name}</strong> which looks like it might be useful.`;
     }
   }
 
@@ -177,12 +177,12 @@ class Place {
   // a command method that takes the player input and uses it to move() the player.
   command() {
 
-    let command = "";
-    const instructions = ["move", "collect"]
+    const actions = ["move", "collect"]
     const directions = ["north", "south", "east", "west"];
 
+    // get command
+    let command = "";    
     const userInput = document.getElementById("userText");
-
     userInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         // get command
@@ -190,21 +190,35 @@ class Place {
 
         //split into array of commands
         const commandArray = command.split(" ");
+        const action = commandArray[0]
+        const focus = commandArray[1]
         console.log(commandArray);
 
-
-        
-        if (directions.includes(commandArray[1])) {
-          currentRoom = currentRoom.move(commandArray[1]);
+        //check action command is valid
+        if (!actions.includes(action)) {
+          player.dryOut();
+          alert("invalid action, try 'move' or 'collect'")
           currentRoom.populatePlaceDetails();
           player.populatePlayerDetails();
+          return this;
+        }
+       
+        
+
+        if (directions.includes(focus)) {
+          player.dryOut();
+          currentRoom = currentRoom.move(focus);
           userInput.value = "";
         } else {
-          // alert(
-          //   "Invalid command, please input 'north', 'south', 'east' or 'west'"
-          // );
+          alert(
+            "Invalid direction, please input 'north', 'south', 'east' or 'west'"
+          );
           userInput.value = "";
         }
+
+        // at end of turn, update place and player details.
+        currentRoom.populatePlaceDetails();
+        player.populatePlayerDetails();
       }
     });
   }
@@ -213,11 +227,9 @@ class Place {
   move(direction) {
     if (this.linkedPlaces[direction]) {
       console.log("direction valid");
-      player.dryOut();
       return this.linkedPlaces[direction];
     } else {
       alert("the way is blocked, try again");
-      player.dryOut();
       return this;
     }
     
