@@ -193,23 +193,35 @@ class Place {
         const focus = commandArray[1]
         console.log(commandArray);
 
-        //check action command is valid
-        if (!this.actions.includes(action)) {
+        //check command has two words and if it does, whether it contains a valid action
+        if (commandArray.length != 2) {
+          
+          alert("invalid command, you must include an action and a target, e.g. 'move west' etc.")
+          // userInput.value = "";
+          // currentRoom.populatePlaceDetails();
+          // player.populatePlayerDetails();
+          // return this;
+        } else if (!this.actions.includes(action)) {
           player.dryOut();
           alert("invalid action, try 'move' or 'collect'")
-          userInput.value = "";
-          currentRoom.populatePlaceDetails();
-          player.populatePlayerDetails();
-          return this;
+          // userInput.value = "";
+          // currentRoom.populatePlaceDetails();
+          // player.populatePlayerDetails();
+          // return this;
+        } else {
+          // having validated the action, use the goController function to determine what to do based on the command entered
+          goController(action, focus);
         }
         
-        // having validated the action, use the goController function to determine what to do based on the command entered
-        goController(action, focus);
+        
+        
         
           
         // at end of turn, update place and player details.
+        player.dryOut();
         currentRoom.populatePlaceDetails();
         player.populatePlayerDetails();
+        userInput.value = "";
 
         return this;
       }
@@ -236,6 +248,17 @@ class Place {
       return this;
     }
     
+  }
+
+  // A function to collect an item and instigate its action, either it goes into our items array or it does something to the player.
+  collect(item) {
+
+    if (currentRoom.linkedItems.length === 0) {
+      console.log("there are no items that you can collect")
+    } else {
+      let collectedItemArray = []
+    }
+
   }
 
   // a method to populate the html, based on the current place
