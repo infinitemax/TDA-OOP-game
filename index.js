@@ -26,9 +26,10 @@ class Player extends Character {
     this.currency = currency;
     this.isEnemy = false;
     this.dryOutRate = 5;
+    this.hasDiscoBall = false;
     this.endConditions = {
-      driedOut: "You ran out of moisture, causing you to fall into a state of suspended animation. Later that evening a human picks you up and puts you back in the garden.",
-      captured : "You were unable to escape the human, who scooped you up and took you back outside."
+      driedOut: "You run out of moisture, causing you to fall into a state of suspended animation. Later that evening a human picks you up and puts you back in the garden.",
+      captured : "You were unable to escape the human, who scooped you up and took you outside. You will need to recuperate before trying again."
     }
   }
 
@@ -47,16 +48,16 @@ class Player extends Character {
     return this.description;
   }
 
-  // giveItems() {
-  //   let itemList = "";
-  //   if (this.items.length < 2) {
-  //     itemList += this.items[0].name;
-  //   } else {
-  //     this.items.forEach(item => {
-        
-  //     })
-  //   }
-  // }
+  giveItems() {
+    let itemDescription = "";
+
+    player.items.forEach((item) => {
+      itemDescription += `<p>${item.name}</p>`
+    });
+
+    return itemDescription;
+  }
+
 
   populatePlayerDetails() {
     
@@ -70,6 +71,7 @@ class Player extends Character {
 
     // display items
     // TODO......
+    document.getElementById("playerItems").innerHTML = this.giveItems();
 
     // display description
     document.getElementById("playerDescription").innerHTML = this.giveDescription();
@@ -82,8 +84,6 @@ class Player extends Character {
       gameOver(this.endConditions.driedOut);
     }
   }
-
-
 
 
 }
@@ -152,7 +152,7 @@ class Place {
     if (this.linkedItems.length === 0) {
       return "There appears to be nothing of value here.";
     } else {
-      return `You can see a <strong>${this.linkedItems[0].name}</strong> which looks like it might be useful.`;
+      return `You can see something <strong>${this.linkedItems[0].appearance}</strong> which looks like it might be useful.`;
     }
   }
 
@@ -199,19 +199,25 @@ class Place {
         } else if (!this.actions.includes(action)) {
           player.dryOut();
           alert("invalid action, try 'move' or 'collect'")
+        } else if (currentRoom.name === "Kitchen" && focus === "west" && garden.weather["canGoOutside"] === false) {
+          alert("You cannot go outside in this weather. You must wait until it starts raining.")
         } else {
           goController(action, focus);
         }
         
         
-        
-        
-          
+      
         // at end of turn, update place and player details.
         player.dryOut();
+        garden.changeWeather();
         currentRoom.populatePlaceDetails();
         player.populatePlayerDetails();
         userInput.value = "";
+
+          if (currentRoom.name === "Garden" && player.hasDiscoBall === true) {
+            youWin();
+            return;
+          }
 
         return this;
       }
@@ -242,9 +248,28 @@ class Place {
   collect(item) {
 
     if (currentRoom.linkedItems.length === 0) {
-      console.log("there are no items that you can collect")
+      alert("there are no items that you can collect")
     } else {
-      let collectedItemArray = []
+      let collectedItemArray = currentRoom.linkedItems.splice(0);
+
+      if (collectedItemArray[0].name === "salt") {
+        player.dryOutRate = 10;
+      }
+
+      if (collectedItemArray[0].name === "water") {
+        player.dryOutRate = 5;
+        player.moisture += 25;
+      }
+
+      if (collectedItemArray[0].name === "disco ball") {
+        player.hasDiscoBall = true;
+      }
+
+      // alert to say we've collected it and what the impact is
+      alert(collectedItemArray[0].message)
+      // push it to player's items array
+      player.items.push(collectedItemArray[0]);
+    
     }
 
   }
@@ -274,22 +299,58 @@ class Place {
     const exitDetails = this.describeExits();
 
     document.getElementById("exitsDescription").innerHTML = exitDetails;
+
+    // give weather report
+
+    const weather = garden.weather["currentWeather"];
+
+    console.log(weather)
+    document.getElementById("weatherReport").innerHTML = weather;
+    
   }
 }
 
 class OutsidePlace extends Place {
-  constructor(name, description, weather) {
+  constructor(name, description) {
     super(name, description);
-    this._weather = weather;
+    this.weatherOptions = [
+      {
+        currentWeather: "a fine rain is falling",
+        canGoOutside: true
+      },
+      {
+        currentWeather: "the sun is shining",
+        canGoOutside: false
+      },
+      {
+        currentWeather: "the sun is shining",
+        canGoOutside: false
+      },
+      {
+        currentWeather: "the sun is shining",
+        canGoOutside: false
+      },
+    ];
+
+    this.weather = this.weatherOptions[0]
   }
 
-  set weather(value) {
-    this._weather = value;
-  }
+    changeWeather() {
+      // generate random number
+      let num = Math.floor(Math.random() * 4)
+      console.log("random = " + num)
+      
+      // update this weather with random number
+      this.weather = this.weatherOptions[num]
+    }
 
-  get weather() {
-    return this._weather;
-  }
+  // set weather(value) {
+  //   this._weather = value;
+  // }
+
+  // get weather() {
+  //   return this._weather;
+  // }
 }
 
 class SecretPlace extends Place {
@@ -302,8 +363,7 @@ class SecretPlace extends Place {
 
 const garden = new OutsidePlace(
   "Garden",
-  "not large, but contains many lush plants: an ideal home for a slug",
-  "A fine rain is falling"
+  "not large, but contains many lush plants: an ideal home for a slug"
 );
 
 // garden.weather = "sunshine" ====== this is how we use the setter method to change the weather.
@@ -347,20 +407,25 @@ livingRoom.linkPlace("north", diningRoom);
 //#region THE ITEMS
 
 class Item {
-  constructor(name, effect) {
+  constructor(name, appearance, message) {
     this.name = name;
-    this.effect = effect;
+    this.appearance = appearance;
+    this.message = message;
   }
 }
 
 // make some items
 
-const key = new Item("key", "unlocking");
-const salt = new Item("sparkling substance", "fatal")
+const key = new Item("key", "metal", "Oh, it a key. It's heavy and I'm not sure whether I can lift it into a keyhole");
+const salt = new Item("salt", "sparkling", "Oh gosh, that was salt - I think I'm drying out faster, I'd better find some water")
+const water = new Item("water", "wet and shiny", "Aha, some water! Yum!")
+const discoBall = new Item("disco ball", "glittering", "Yes! This is what I was looking for! I'd better get back to the garden now, without being seen.")
 
 // link the items
 garden.linkItem(key);
-kitchen.linkItem(salt);
+kitchen.linkItem(discoBall);
+diningRoom.linkItem(water);
+livingRoom.linkItem(salt);
 
 
 //#endregion
@@ -385,13 +450,28 @@ const gameOver = (condition) => {
     e.classList.add("hidden");
   })
   
+  document.getElementById("gameEndTitle").classList.remove("hidden")
   document.getElementById("gameEndTitle").innerHTML = `Your game is over.`
 
+  document.getElementById("gameEndText").classList.remove("hidden")
   document.getElementById("gameEndText").innerHTML = `${condition}`
   
   document.getElementById("restartButton").classList.remove("hidden");
-
   
+}
+
+const youWin = () => {
+  const gameText = document.querySelectorAll(".gamePlay")
+
+  gameText.forEach(e => {
+    e.classList.add("hidden");
+  })
+  
+  document.getElementById("gameEndTitle").innerHTML = `You win!`
+
+  document.getElementById("gameEndText").innerHTML = `Well done, you have successfully found the lost disco ball and brought the party to the garden. Let the good times roll!`
+  
+  document.getElementById("restartButton").classList.remove("hidden").innerHTML = "Do it again?";
 }
 
 const goController = (action, focus) => {
@@ -402,8 +482,7 @@ const goController = (action, focus) => {
       currentRoom.move(focus);
       break;
       case "collect":
-        console.log("collect this!")
-        break;
+        currentRoom.collect(focus);
     default:
       console.log(action)
     } 

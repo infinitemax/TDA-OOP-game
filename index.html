@@ -13,8 +13,8 @@
         <div id="gamearea" class="grid gap-4 grid-cols-1 sm:grid-cols-12">
             <div id="details" class="sm:col-span-8 bg-gray-200 p-2">
                 <div>
-                    <h2 id="gameEndTitle" class="font-bold pb-4"></h2>
-                    <p id="gameEndText" class="pb-8"></p>
+                    <h2 id="gameEndTitle" class="font-bold pb-4 hidden"></h2>
+                    <p id="gameEndText" class="pb-8 hidden"></p>
                     <button id="restartButton" class="hidden" onclick="window.location.reload()">Retry</button>
                     <p class="descriptionHeading gamePlay">Place:</p>
                     <p id="placeDescription" class="gamePlay"></p>
@@ -36,6 +36,8 @@
                 <p class="descriptionHeading">Moisture level: <span id="playerMoisture"></span></p>
                 <p class="descriptionHeading">Items:</p>
                 <p id="playerItems"></p>
+                <hr class="h-1 my-1  bg-blue-900">
+                <p>In the garden <span id="weatherReport"> </span></p>
             </div>
         </div>
 
