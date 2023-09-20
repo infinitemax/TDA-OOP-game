@@ -194,22 +194,12 @@ class Place {
         console.log(commandArray);
 
         //check command has two words and if it does, whether it contains a valid action
-        if (commandArray.length != 2) {
-          
+        if (commandArray.length != 2) {        
           alert("invalid command, you must include an action and a target, e.g. 'move west' etc.")
-          // userInput.value = "";
-          // currentRoom.populatePlaceDetails();
-          // player.populatePlayerDetails();
-          // return this;
         } else if (!this.actions.includes(action)) {
           player.dryOut();
           alert("invalid action, try 'move' or 'collect'")
-          // userInput.value = "";
-          // currentRoom.populatePlaceDetails();
-          // player.populatePlayerDetails();
-          // return this;
         } else {
-          // having validated the action, use the goController function to determine what to do based on the command entered
           goController(action, focus);
         }
         
@@ -231,7 +221,6 @@ class Place {
   // a move method, moves the player to a valid place, called by command() method.
   move(direction) {
     if (!this.directions.includes(direction)) {
-      player.dryOut();
       alert(
         "Invalid direction, please input 'north', 'south', 'east' or 'west'"
       );
@@ -242,12 +231,11 @@ class Place {
     if (this.linkedPlaces[direction]) {
       console.log("direction valid");
       currentRoom = this.linkedPlaces[direction];
-      return this
+      
     } else {
       alert("the way is blocked, try again");
-      return this;
     }
-    
+    return this;
   }
 
   // A function to collect an item and instigate its action, either it goes into our items array or it does something to the player.
