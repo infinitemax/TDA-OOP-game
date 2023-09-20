@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Slug OOP game | home</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -13,7 +13,8 @@
         <div id="gamearea" class="grid gap-4 grid-cols-1 sm:grid-cols-12">
             <div id="details" class="sm:col-span-8 bg-gray-200 p-2">
                 <div>
-                    <h2 id="gameEndText"></h2>
+                    <h2 id="gameEndTitle" class="font-bold pb-4"></h2>
+                    <p id="gameEndText" class="pb-8"></p>
                     <button id="restartButton" class="hidden" onclick="window.location.reload()">Retry</button>
                     <p class="descriptionHeading gamePlay">Place:</p>
                     <p id="placeDescription" class="gamePlay"></p>
