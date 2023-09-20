@@ -1,5 +1,7 @@
 let time = new Date();
 
+// set userInput field
+const userInput = document.getElementById("userText");
 console.log(`we are online at ${time}!`);
 
 //#region THE PEOPLE
@@ -79,8 +81,6 @@ class Player extends Character {
     if (this.moisture === 0) {
       gameOver(this.endConditions.driedOut);
     }
-
-
   }
 
 
@@ -132,6 +132,8 @@ class Place {
     this.linkedPlaces = {};
     this.linkedItems = [];
     this.linkedCharacters = [];
+    this.actions = ["move", "collect"];
+    this.directions = ["north", "south", "east", "west"];
   }
 
   linkPlace(direction, place) {
@@ -150,7 +152,7 @@ class Place {
     if (this.linkedItems.length === 0) {
       return "There appears to be nothing of value here.";
     } else {
-      return `You can see a ${this.linkedItems[0].name} which looks like it might be useful.`;
+      return `You can see a <strong>${this.linkedItems[0].name}</strong> which looks like it might be useful.`;
     }
   }
 
@@ -174,15 +176,12 @@ class Place {
     return exitDescription;
   }
 
-  // a command method that takes the player input and uses it to move() the player.
+
+  // a command method that takes the player input and uses it to move() the player. At the moment it sits within teh place object, which I think is wrong, it should probably sit in an overall game object which contains all the other objects as well as the overall controller methods.
   command() {
 
-    let command = "";
-    const instructions = ["move", "collect"]
-    const directions = ["north", "south", "east", "west"];
-
-    const userInput = document.getElementById("userText");
-
+    // get command
+    let command = "";    
     userInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         // get command
@@ -190,37 +189,76 @@ class Place {
 
         //split into array of commands
         const commandArray = command.split(" ");
+        const action = commandArray[0]
+        const focus = commandArray[1]
         console.log(commandArray);
 
-
-        
-        if (directions.includes(commandArray[1])) {
-          currentRoom = currentRoom.move(commandArray[1]);
-          currentRoom.populatePlaceDetails();
-          player.populatePlayerDetails();
-          userInput.value = "";
+        //check command has two words and if it does, whether it contains a valid action
+        if (commandArray.length != 2) {
+          
+          alert("invalid command, you must include an action and a target, e.g. 'move west' etc.")
+          // userInput.value = "";
+          // currentRoom.populatePlaceDetails();
+          // player.populatePlayerDetails();
+          // return this;
+        } else if (!this.actions.includes(action)) {
+          player.dryOut();
+          alert("invalid action, try 'move' or 'collect'")
+          // userInput.value = "";
+          // currentRoom.populatePlaceDetails();
+          // player.populatePlayerDetails();
+          // return this;
         } else {
-          // alert(
-          //   "Invalid command, please input 'north', 'south', 'east' or 'west'"
-          // );
-          userInput.value = "";
+          // having validated the action, use the goController function to determine what to do based on the command entered
+          goController(action, focus);
         }
+        
+        
+        
+        
+          
+        // at end of turn, update place and player details.
+        player.dryOut();
+        currentRoom.populatePlaceDetails();
+        player.populatePlayerDetails();
+        userInput.value = "";
+
+        return this;
       }
     });
   }
 
   // a move method, moves the player to a valid place, called by command() method.
   move(direction) {
+    if (!this.directions.includes(direction)) {
+      player.dryOut();
+      alert(
+        "Invalid direction, please input 'north', 'south', 'east' or 'west'"
+      );
+      userInput.value = "";
+      return this;
+    }
+
     if (this.linkedPlaces[direction]) {
       console.log("direction valid");
-      player.dryOut();
-      return this.linkedPlaces[direction];
+      currentRoom = this.linkedPlaces[direction];
+      return this
     } else {
       alert("the way is blocked, try again");
-      player.dryOut();
       return this;
     }
     
+  }
+
+  // A function to collect an item and instigate its action, either it goes into our items array or it does something to the player.
+  collect(item) {
+
+    if (currentRoom.linkedItems.length === 0) {
+      console.log("there are no items that you can collect")
+    } else {
+      let collectedItemArray = []
+    }
+
   }
 
   // a method to populate the html, based on the current place
@@ -368,6 +406,20 @@ const gameOver = (condition) => {
   
 }
 
+const goController = (action, focus) => {
+  console.log("engaing go controller")
+  console.log(`action = ${action}`)
+  switch (action) {
+    case "move":
+      currentRoom.move(focus);
+      break;
+      case "collect":
+        console.log("collect this!")
+        break;
+    default:
+      console.log(action)
+    } 
+}
 
 startGame();
 
