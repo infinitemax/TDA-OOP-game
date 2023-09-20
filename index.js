@@ -178,23 +178,31 @@ class Place {
   command() {
 
     let command = "";
+    const instructions = ["move", "collect"]
     const directions = ["north", "south", "east", "west"];
 
     const userInput = document.getElementById("userText");
 
     userInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
+        // get command
         command = userInput.value.toLowerCase();
-        console.log(command);
-        if (directions.includes(command)) {
-          currentRoom = currentRoom.move(command);
+
+        //split into array of commands
+        const commandArray = command.split(" ");
+        console.log(commandArray);
+
+
+        
+        if (directions.includes(commandArray[1])) {
+          currentRoom = currentRoom.move(commandArray[1]);
           currentRoom.populatePlaceDetails();
           player.populatePlayerDetails();
           userInput.value = "";
         } else {
-          alert(
-            "Invalid command, please input 'north', 'south', 'east' or 'west'"
-          );
+          // alert(
+          //   "Invalid command, please input 'north', 'south', 'east' or 'west'"
+          // );
           userInput.value = "";
         }
       }
