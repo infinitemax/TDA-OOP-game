@@ -14,18 +14,22 @@ input {
     caret-shape: block;
 }
 
-#restartButton {
+.restartButton {
     border-width: 1px;
     border-color: black;
     caret-color: black;
     padding: 8px 40px;
 }
 
-#restartButton:hover {
+.restartButton:hover {
     background-color: gray;
     color: white;
 }
 
 .descriptionHeading {
     font-weight: 700;
+}
+
+.welcomeP {
+    padding-top: .4rem;
 }

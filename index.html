@@ -9,13 +9,30 @@
 </head>
 <body>
     <div>
+        <div id="welcomePage" class="bg-gray-200 p-2 mb-12">
+            <h1 class="font-bold text-2xl pb-[.5rem]">The Slug Game</h1>
+            <hr class="h-1 my-1 bg-blue-900">
+            <p class="welcomeP">You are a slug, living in a beautiful lush garden somewhere on earth.</p>
+            <p class="welcomeP">You and your slug companions like nothing more than having a good party, but unfortunately some necessary items have been picked up by a human and taken into "the house".</p>
+            <p class="welcomeP">It is down to you to be the hero of the hour and get the party started once more.</p>
+            <hr class="h-1 my-1 bg-blue-900">
+            <p class="welcomeP">Your task is to enter the house and find a <strong>disco ball</strong> and a <strong>party light</strong>.</p>
+            <p class="welcomeP">To move about the house, use the <strong>move</strong> command, and specify a direction.</p>
+            <p class="welcomeP">You can collect items using the <strong>collect thing</strong> command.</p>
+            <hr class="h-1 my-1 bg-blue-900">
+            <p class="welcomeP">Please enter your name, and press start</p>
+            <input type="text" id="nameInput">
+            <br>
+            <button class="restartButton mt-4" id="goButton">START</button>
+            
 
-        <div id="gamearea" class="grid gap-4 grid-cols-1 sm:grid-cols-12">
+        </div>
+        <div id="gamearea" class="grid gap-4 grid-cols-1 sm:grid-cols-12 hidden">
             <div id="details" class="sm:col-span-8 bg-gray-200 p-2">
                 <div>
                     <h2 id="gameEndTitle" class="font-bold pb-4 gameEnd hidden"></h2>
                     <p id="gameEndText" class="pb-8 gameEnd hidden"></p>
-                    <button id="restartButton" class="gameEnd hidden" onclick="window.location.reload()">Retry</button>
+                    <button class="restartButton gameEnd hidden" onclick="window.location.reload()">Retry</button>
                     <p class="descriptionHeading gamePlay">Place:</p>
                     <p id="placeDescription" class="gamePlay"></p>
                     <p class="descriptionHeading gamePlay">Items:</p>
@@ -23,7 +40,8 @@
                     <p class="descriptionHeading gamePlay">People:</p>
                     <p id="characterDescription" class="gamePlay"></p>
                     <p class="descriptionHeading gamePlay">Exits:</p>
-                    <p id="exitsDescription" class="gamePlay"></p>
+                    <p id="exitsDescription" class="gamePlay">
+                    </p>
                     <p class="descriptionHeading gamePlay">What next?</p>
                     <input type="text" id="userText"  class="gamePlay">
                 </div>
