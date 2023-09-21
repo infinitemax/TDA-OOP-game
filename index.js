@@ -80,7 +80,7 @@ class Player extends Character {
   dryOut() {
     this.moisture -= this.dryOutRate;
     
-    if (this.moisture === 0) {
+    if (this.moisture <= 0) {
       gameOver(this.endConditions.driedOut);
     }
   }
@@ -126,9 +126,10 @@ const player = new Player("Aspen", "An optimistic slug with a head full of dream
 //#region THE PLACES AND THINGS
 
 class Place {
-  constructor(name, description) {
+  constructor(name, description, entrance) {
     this.name = name;
     this.description = description;
+    this.entrance = entrance;
     this.linkedPlaces = {};
     this.linkedItems = [];
     this.linkedCharacters = [];
@@ -145,14 +146,14 @@ class Place {
   }
 
   describePlace() {
-    return `You are in a ${this.name}, which is ${this.description}.`;
+    return `You are in a ${this.name}, which is ${this.description}`;
   }
 
   describeItems() {
     if (this.linkedItems.length === 0) {
       return "There appears to be nothing of value here.";
     } else {
-      return `You can see something <strong>${this.linkedItems[0].appearance}</strong> which looks like it might be useful.`;
+      return `You can see a ${this.linkedItems[0].appearance} <strong>thing</strong>, which looks like it might be useful to <strong>collect</strong>.`;
     }
   }
 
@@ -177,9 +178,8 @@ class Place {
   }
 
 
-  // a command method that takes the player input and uses it to move() the player. At the moment it sits within teh place object, which I think is wrong, it should probably sit in an overall game object which contains all the other objects as well as the overall controller methods.
+  // a command method that takes the player input and uses it to control the player (move(), collect() etc). At the moment it sits within teh place object, which I think is wrong, it should probably sit in an overall game object which contains all the other objects as well as the overall controller methods.
   command() {
-
     // get command
     let command = "";    
     userInput.addEventListener("keydown", (e) => {
@@ -189,15 +189,13 @@ class Place {
 
         //split into array of commands
         const commandArray = command.split(" ");
-        const action = commandArray[0]
-        const focus = commandArray[1]
-        console.log(commandArray);
+        const action = commandArray[0];
+        const focus = commandArray[1];
 
         //check command has two words and if it does, whether it contains a valid action
         if (commandArray.length != 2) {        
           alert("invalid command, you must include an action and a target, e.g. 'move west' etc.")
         } else if (!this.actions.includes(action)) {
-          player.dryOut();
           alert("invalid action, try 'move' or 'collect'")
         } else if (currentRoom.name === "Kitchen" && focus === "west" && garden.weather["canGoOutside"] === false) {
           alert("You cannot go outside in this weather. You must wait until it starts raining.")
@@ -205,8 +203,6 @@ class Place {
           goController(action, focus);
         }
         
-        
-      
         // at end of turn, update place and player details.
         player.dryOut();
         garden.changeWeather();
@@ -235,7 +231,6 @@ class Place {
     }
 
     if (this.linkedPlaces[direction]) {
-      console.log("direction valid");
       currentRoom = this.linkedPlaces[direction];
       
     } else {
@@ -252,13 +247,22 @@ class Place {
     } else {
       let collectedItemArray = currentRoom.linkedItems.splice(0);
 
+      // if salt is collected, dry out rate increases
       if (collectedItemArray[0].name === "salt") {
         player.dryOutRate = 10;
       }
 
+      // if water is collected, moisture replenished, dryout rate normal
       if (collectedItemArray[0].name === "water") {
         player.dryOutRate = 5;
         player.moisture += 25;
+
+        // water removes salt from items
+        const saltIndex = player.items.findIndex(item => item.name === "salt")
+        if (saltIndex != -1) {
+          player.items.splice(saltIndex, 1)
+
+        }
       }
 
       if (collectedItemArray[0].name === "disco ball") {
@@ -304,7 +308,6 @@ class Place {
 
     const weather = garden.weather["currentWeather"];
 
-    console.log(weather)
     document.getElementById("weatherReport").innerHTML = weather;
     
   }
@@ -319,15 +322,15 @@ class OutsidePlace extends Place {
         canGoOutside: true
       },
       {
-        currentWeather: "the sun is shining",
-        canGoOutside: false
+        currentWeather: "the rain is comming down fast",
+        canGoOutside: true
       },
       {
         currentWeather: "the sun is shining",
         canGoOutside: false
       },
       {
-        currentWeather: "the sun is shining",
+        currentWeather: "it is clear and bright",
         canGoOutside: false
       },
     ];
@@ -338,7 +341,6 @@ class OutsidePlace extends Place {
     changeWeather() {
       // generate random number
       let num = Math.floor(Math.random() * 4)
-      console.log("random = " + num)
       
       // update this weather with random number
       this.weather = this.weatherOptions[num]
@@ -363,31 +365,46 @@ class SecretPlace extends Place {
 
 const garden = new OutsidePlace(
   "Garden",
-  "not large, but contains many lush plants: an ideal home for a slug"
+  "not large, but contains many lush plants: an ideal home for a slug.",
+  "doorway"
 );
-
-// garden.weather = "sunshine" ====== this is how we use the setter method to change the weather.
-
 const kitchen = new Place(
   "Kitchen",
-  "reasonably tidy, with plenty of nooks to explore"
+  "reasonably tidy, with plenty of nooks to explore."
 );
 const hallway = new Place(
   "Hallway",
-  "brightly lit, painted white, with a wobbly wooden floor"
+  "brightly lit, painted white, with a wobbly wooden floor."
 );
 const staircase = new Place(
   "Staircase",
-  "steep and long, covered with a rough carpet made of some kind of plant fibre"
+  "steep and long, covered with a rough carpet made of some kind of plant fibre."
 );
 const diningRoom = new Place(
   "Dining Room",
-  "long, with blue walls, a dining set, more than a few cobwebs"
+  "long, with blue walls, a dining set, more than a few cobwebs."
 );
 const livingRoom = new Place(
   "Living Room",
-  "dark blue, with a tired looking sofa"
+  "dark blue, with a tired looking sofa."
 );
+const landing = new Place(
+  "Landing",
+  "long, with a high ceiling. There isn't much more to say about landings is there?"
+);
+const bathroom = new Place(
+  "bathroom",
+  "well lit, with a bath, shower, basin and mirror, though you're not tall enough to look at your reflection."
+);
+const office = new Place(
+  "office",
+  "messy, with a desk, computer, laundry and all manner of other bits and pieces. How does anyone get any work done in here?"
+);
+const bedroom = new Place(
+  "bedroom",
+  "a large bedroom, with dark blue walls and a big window overlooking a quiet road."
+)
+
 
 // link the places
 
@@ -398,9 +415,17 @@ hallway.linkPlace("north", kitchen);
 hallway.linkPlace("west", diningRoom);
 hallway.linkPlace("east", staircase);
 staircase.linkPlace("west", hallway);
+staircase.linkPlace("north", landing);
 diningRoom.linkPlace("east", hallway);
 diningRoom.linkPlace("south", livingRoom);
 livingRoom.linkPlace("north", diningRoom);
+landing.linkPlace("south", staircase);
+landing.linkPlace("north", bathroom);
+bathroom.linkPlace("south", landing);
+landing.linkPlace("west", office);
+office.linkPlace("east", landing);
+landing.linkPlace("south", bedroom);
+bedroom.linkPlace("north", landing);
 
 //#endregion
 
@@ -423,9 +448,9 @@ const discoBall = new Item("disco ball", "glittering", "Yes! This is what I was 
 
 // link the items
 garden.linkItem(key);
-kitchen.linkItem(discoBall);
+kitchen.linkItem(salt);
 diningRoom.linkItem(water);
-livingRoom.linkItem(salt);
+livingRoom.linkItem(discoBall);
 
 
 //#endregion
@@ -461,10 +486,15 @@ const gameOver = (condition) => {
 }
 
 const youWin = () => {
-  const gameText = document.querySelectorAll(".gamePlay")
+  const gameText = document.querySelectorAll(".gamePlay");
+  const gameEndContent = document.querySelectorAll(".gameEnd");
 
   gameText.forEach(e => {
     e.classList.add("hidden");
+  })
+
+  gameEndContent.forEach(e => {
+    e.classList.remove("hidden");
   })
   
   document.getElementById("gameEndTitle").innerHTML = `You win!`
@@ -475,8 +505,6 @@ const youWin = () => {
 }
 
 const goController = (action, focus) => {
-  console.log("engaing go controller")
-  console.log(`action = ${action}`)
   switch (action) {
     case "move":
       currentRoom.move(focus);
