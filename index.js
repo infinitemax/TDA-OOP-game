@@ -1,34 +1,6 @@
 let time = new Date();
 console.log(`we are online at ${time}!`);
 
-// set userInput field
-const userInput = document.getElementById("userText");
-
-// 
-const userNameInput = document.getElementById("nameInput");
-let userName = "";
-
-const startButtonPush = (name) => {
-  
-  document.getElementById("welcomePage").classList.add("hidden")
-  document.getElementById("gamearea").classList.remove("hidden")
-
-  // console.log(name)
-
-  // if(name === "") {
-  //   alert("Please enter your name")
-  // }
-  
-  // username is saved
-  // userName = name;
-  // username is addd to relevant bits
-
-  // intro screen hides
-
-  // game is started
-};
-
-document.getElementById("goButton").addEventListener("click", startButtonPush)
 
 //#region THE PEOPLE
 
@@ -52,19 +24,21 @@ class Player extends Character {
     this.currency = currency;
     this.isEnemy = false;
     this.dryOutRate = 5;
+    this.actions = ["move", "collect", "ask"];
     this.hasDiscoBall = false;
     this.hasPartyLight = false;
     this.endConditions = {
       driedOut:
         "You run out of moisture, causing you to fall into a state of suspended animation. Later that evening a human picks you up and puts you back in the garden.",
       captured:
-        "You were unable to escape the human, who scooped you up and took you outside. You will need to recuperate before trying again.",
+        "You were seen by the human, who scooped you up and took you outside. You will need to recuperate before trying again. Time for some sleep",
     };
   }
 
   // methods
 
   giveName() {
+
     return this.name;
   }
 
@@ -152,6 +126,40 @@ const player = new Player(
   10
 );
 
+// create friends
+
+const mouse = new Friend(
+  "mouse",
+  "a small brown mouse",
+  10,
+  10,
+  "mouse",
+  [],
+  "I think you shouldn't go outside when it's sunny, make sure to check the weather first!",
+)
+
+const spider = new Friend(
+  "spider",
+  "a delicate yet sturdy spider",
+  10,
+  10,
+  "spider",
+  [],
+  "Sometimes you need to be extra quiet - if there's a human around, try to SNEAK"
+)
+
+// create baddie
+
+const programmer = new Enemy(
+  "human",
+  "hunched over a computer, furiously writing code",
+  10,
+  10,
+  "human",
+  ""
+)
+
+
 //#endregion
 
 //#region THE PLACES AND THINGS
@@ -165,7 +173,6 @@ class Place {
     this.linkedPlaces = {};
     this.linkedItems = [];
     this.linkedCharacters = [];
-    this.actions = ["move", "collect"];
     this.directions = ["north", "south", "east", "west"];
   }
 
@@ -175,6 +182,10 @@ class Place {
 
   linkItem(item) {
     this.linkedItems.push(item);
+  }
+
+  linkCharacater(character) {
+    this.linkedCharacters.push(character);
   }
 
   describePlace() {
@@ -189,11 +200,18 @@ class Place {
     }
   }
 
-  describeCharacters() {
+  describeCharacters(character) {
     if (Object.keys(this.linkedCharacters).length === 0) {
       return `You are alone`;
-    } else {
-      return `The ${this.name} contains a .... who looks at you and says ....`;
+    }
+    //add if statement here to see if char is an enemy or a friend
+    if (!character.isEnemy) {
+      return `Nearby, you can see a <strong>${character.name}</strong>. They seem friendly so you could <strong>ask</strong> them something.`;
+    }
+
+    // console.log(character)
+    else {
+      return `Nearby, you can see a <strong>${character.name}</strong> ${character.description}. Be careful to avoid them seeing you: consider your commands wisely.`
     }
   }
 
@@ -235,13 +253,14 @@ class Place {
         const commandArray = command.split(" ");
         const action = commandArray[0];
         const focus = commandArray[1];
+        console.log(`action was ${action}`)
 
         //check command has two words and if it does, whether it contains a valid action
         if (commandArray.length != 2) {
           alert(
             "invalid command, you must include an action and a target, e.g. 'move west' etc."
           );
-        } else if (!this.actions.includes(action)) {
+        } else if (!player.actions.includes(action)) {
           alert("invalid action, try 'move' or 'collect'");
         } else if (
           currentRoom.name === "Kitchen" &&
@@ -251,6 +270,12 @@ class Place {
           alert(
             "You cannot go outside in this weather. You must wait until it starts raining."
           );
+        } else if (currentRoom.linkedCharacters.length > 0 && currentRoom.linkedCharacters[0].isEnemy && action != "sneak") {
+
+            gameOver(player.endConditions.captured)
+        
+
+          // 
         } else {
           goController(action, focus);
         }
@@ -292,6 +317,10 @@ class Place {
     } else {
       alert("the way is blocked, try again");
     }
+
+    if (this.linkedPlaces[direction].name === "Garden" && garden.weather["canGoOutside"] === true) {
+      player.moisture += 15;
+    }
     return this;
   }
 
@@ -321,6 +350,10 @@ class Place {
         }
       }
 
+      if(collectedItemArray[0].name === "small drip") {
+        player.moisture += 10;
+      }
+
       if (collectedItemArray[0].name === "disco ball") {
         player.hasDiscoBall = true;
       }
@@ -335,6 +368,26 @@ class Place {
       player.items.push(collectedItemArray[0]);
     }
   }
+
+  ask(person) {
+
+    if (this.linkedCharacters.length === 0) {
+      alert("There is no one here to talk to.")
+    } else if (person != this.linkedCharacters[0].name){
+      alert("Are you sure you're asking the right person?")
+    } else {
+      alert(this.linkedCharacters[0].knowledgeToGive);
+    }
+
+    if (person === "spider") {
+      player.actions.push("sneak");
+    }
+  }
+
+  // sneak() {
+
+  // }
+
 
   // a method to populate the html, based on the current place
   populatePlaceDetails() {
@@ -351,7 +404,7 @@ class Place {
 
     // describe the characters
 
-    const characterDetails = "<p>" + this.describeCharacters() + "</p>";
+    const characterDetails = "<p>" + this.describeCharacters(this.linkedCharacters[0]) + "</p>";
 
     document.getElementById("characterDescription").innerHTML =
       characterDetails;
@@ -485,7 +538,6 @@ staircase.linkPlace("north", landing);
 diningRoom.linkPlace("east", hallway);
 diningRoom.linkPlace("south", livingRoom);
 livingRoom.linkPlace("north", diningRoom);
-
 landing.linkPlace("east", staircase);
 landing.linkPlace("north", bathroom);
 bathroom.linkPlace("south", landing);
@@ -493,6 +545,13 @@ landing.linkPlace("west", office);
 office.linkPlace("east", landing);
 landing.linkPlace("south", bedroom);
 bedroom.linkPlace("north", landing);
+
+// link characters to rooms
+
+kitchen.linkCharacater(mouse);
+office.linkCharacater(programmer);
+bedroom.linkCharacater(spider);
+
 
 //#endregion
 
@@ -508,10 +567,10 @@ class Item {
 
 // make some items
 
-const key = new Item(
-  "key",
-  "metal",
-  "Oh, it a key. It's heavy and I'm not sure whether I can lift it into a keyhole"
+const hat = new Item(
+  "hat",
+  "intriguing",
+  "Oh, it's a lovely hat! Perfect to wear on this mission."
 );
 const salt = new Item(
   "salt",
@@ -529,13 +588,19 @@ const partyLight = new Item(
   "flashing",
   "Brilliant! Now we can get the party started!"
 );
+const smallDrip = new Item(
+  "small drip",
+  "small, wet",
+  "Aha, this drip has helped to replenish my moisture."
+)
 
 // link the items
-garden.linkItem(key);
+garden.linkItem(hat);
 kitchen.linkItem(salt);
 diningRoom.linkItem(water);
 livingRoom.linkItem(discoBall);
 office.linkItem(partyLight);
+bedroom.linkItem(smallDrip);
 
 //#endregion
 
@@ -597,9 +662,49 @@ const goController = (action, focus) => {
       break;
     case "collect":
       currentRoom.collect(focus);
+      break;
+    case "ask":
+      currentRoom.ask(focus);
+      break;
+    case "sneak":
+      if (currentRoom.directions.includes(focus)) {
+        currentRoom.move(focus)
+      } else if (focus === "thing") {
+        currentRoom.collect(focus)
+      }
+      // if currentRoom character isEnemy, player must use sneak - sneak should enable either movement or collection, can I do this without writing a new method?
     default:
       console.log(action);
   }
+};
+
+// set userInput field
+const userInput = document.getElementById("userText");
+
+// 
+const userNameInput = document.getElementById("nameInput");
+let userName = "";
+
+// a function to take the user's name input
+const changeName = (name) => {
+  userName = name;
+
+}
+
+// a function to show the game area and populate player name.
+const startButtonPush = () => {
+  
+  if (userName.length < 1) {
+    alert("Please name your slug")
+    return
+  }
+
+  player.name = userName;
+  player.populatePlayerDetails();
+
+  document.getElementById("welcomePage").classList.add("hidden")
+  document.getElementById("gamearea").classList.remove("hidden")
+
 };
 
 startGame();

@@ -33,3 +33,7 @@ input {
 .welcomeP {
     padding-top: .4rem;
 }
+
+hr {
+    padding: 0 12px
+}
