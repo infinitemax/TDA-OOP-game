@@ -1,6 +1,7 @@
 let time = new Date();
 console.log(`we are online at ${time}!`);
 
+const alertArea = document.getElementById("alertText");
 
 //#region THE PEOPLE
 
@@ -24,12 +25,12 @@ class Player extends Character {
     this.currency = currency;
     this.isEnemy = false;
     this.dryOutRate = 5;
-    this.actions = ["move", "collect", "ask"];
+    this.actions = ["move", "collect", "ask", "wait"];
     this.hasDiscoBall = false;
     this.hasPartyLight = false;
     this.endConditions = {
       driedOut:
-        "You run out of moisture, causing you to fall into a state of suspended animation. Later that evening a human picks you up and puts you back in the garden.",
+        "You ran out of moisture, causing you to fall into a state of suspended animation. Later that evening a human picks you up and puts you back in the garden.",
       captured:
         "You were seen by the human, who scooped you up and took you outside. You will need to recuperate before trying again. Time for some sleep",
     };
@@ -145,7 +146,7 @@ const spider = new Friend(
   10,
   "spider",
   [],
-  "Sometimes you need to be extra quiet - if there's a human around, try to SNEAK"
+  "Sometimes you need to be extra quiet - if there's a human around, try to <strong>sneak</strong>"
 )
 
 // create baddie
@@ -225,7 +226,7 @@ class Place {
       let placeThroughExit = this.linkedPlaces[exit].name;
 
       // if player is on staircase OR if linked place is staircase, don't use entrance words.
-      if (this.name === "Staircase" || placeThroughExit === "Staircase") {
+      if (this.name === "staircase" || placeThroughExit === "staircase") {
         exitDescription += `<p>To the <strong>${exit}</strong> there is a ${placeThroughExit}</p>`;
       } else {
         // if a place has been visited, use it's name in directions list
@@ -257,19 +258,17 @@ class Place {
 
         //check command has two words and if it does, whether it contains a valid action
         if (commandArray.length != 2) {
-          alert(
-            "invalid command, you must include an action and a target, e.g. 'move west' etc."
-          );
+          alertArea.innerHTML = "You entered an invalid command, you must include an <strong>action</strong> and a <strong>target</strong>, e.g. 'move west' etc.";
         } else if (!player.actions.includes(action)) {
-          alert("invalid action, try 'move' or 'collect'");
+          alertArea.innerHTML = "That was an invalid action, try 'move' or 'collect'";
         } else if (
           currentRoom.name === "Kitchen" &&
           focus === "west" &&
           garden.weather["canGoOutside"] === false
         ) {
-          alert(
+          alertArea.innerHTML = 
             "You cannot go outside in this weather. You must wait until it starts raining."
-          );
+          ;
         } else if (currentRoom.linkedCharacters.length > 0 && currentRoom.linkedCharacters[0].isEnemy && action != "sneak") {
 
             gameOver(player.endConditions.captured)
@@ -285,6 +284,7 @@ class Place {
         garden.changeWeather();
         currentRoom.populatePlaceDetails();
         player.populatePlayerDetails();
+        
         userInput.value = "";
 
         if (
@@ -303,10 +303,11 @@ class Place {
 
   // a move method, moves the player to a valid place, called by command() method.
   move(direction) {
+    alertArea.innerHTML = "";
     if (!this.directions.includes(direction)) {
-      alert(
-        "Invalid direction, please input 'north', 'south', 'east' or 'west'"
-      );
+      alertArea.innerHTML = 
+        "That was an invalid direction, please use 'north', 'south', 'east' or 'west'"
+      ;
       userInput.value = "";
       return this;
     }
@@ -315,7 +316,8 @@ class Place {
       currentRoom = this.linkedPlaces[direction];
       currentRoom.hasBeenVisited = true;
     } else {
-      alert("the way is blocked, try again");
+      alertArea.innerHTML = "That way is blocked, try a different direction";
+      return this;
     }
 
     if (this.linkedPlaces[direction].name === "Garden" && garden.weather["canGoOutside"] === true) {
@@ -327,7 +329,7 @@ class Place {
   // A function to collect an item and instigate its action, either it goes into our items array or it does something to the player.
   collect() {
     if (currentRoom.linkedItems.length === 0) {
-      alert("there are no items that you can collect");
+      alertArea.innerHTML = "There are no items that you can collect";
     } else {
       let collectedItemArray = currentRoom.linkedItems.splice(0);
 
@@ -356,14 +358,20 @@ class Place {
 
       if (collectedItemArray[0].name === "disco ball") {
         player.hasDiscoBall = true;
+        if (player.hasPartyLight) {
+          discoBall.message += " Now I just need to get back to the <strong>garden</strong>."
+        }
       }
 
       if (collectedItemArray[0].name === "party light") {
         player.hasPartyLight = true;
+        if (player.hasDiscoBall) {
+          partyLight.message += " Now I just need to get back to the <strong>garden</strong>."
+        }
       }
 
       // alert to say we've collected it and what the impact is
-      alert(collectedItemArray[0].message);
+      alertArea.innerHTML = collectedItemArray[0].message;
       // push it to player's items array
       player.items.push(collectedItemArray[0]);
     }
@@ -372,11 +380,11 @@ class Place {
   ask(person) {
 
     if (this.linkedCharacters.length === 0) {
-      alert("There is no one here to talk to.")
+      alertArea.innerHTML = "There is no one here to talk to."
     } else if (person != this.linkedCharacters[0].name){
-      alert("Are you sure you're asking the right person?")
+      alertArea.innerHTML = "Are you sure you're asking the right person?";
     } else {
-      alert(this.linkedCharacters[0].knowledgeToGive);
+      alertArea.innerHTML = `<strong>The ${person} says:</strong> '${this.linkedCharacters[0].knowledgeToGive}'`
     }
 
     if (person === "spider") {
@@ -384,9 +392,9 @@ class Place {
     }
   }
 
-  // sneak() {
-
-  // }
+  wait() {
+    
+  }
 
 
   // a method to populate the html, based on the current place
@@ -475,37 +483,37 @@ class SecretPlace extends Place {
 //make some places
 
 const garden = new OutsidePlace(
-  "Garden",
+  "garden",
   "not large, but contains many lush plants: an ideal home for a slug.",
   "doorway"
 );
 const kitchen = new Place(
-  "Kitchen",
+  "kitchen",
   "reasonably tidy, with plenty of nooks to explore.",
   "doorway"
 );
 const hallway = new Place(
-  "Hallway",
+  "hallway",
   "brightly lit, painted white, with a wobbly wooden floor.",
   "doorway"
 );
 const staircase = new Place(
-  "Staircase",
+  "staircase",
   "steep and long, covered with a rough carpet made of some kind of plant fibre.",
   "staircase"
 );
 const diningRoom = new Place(
-  "Dining Room",
+  "dining room",
   "long, with blue walls, a dining set, more than a few cobwebs.",
   "doorway"
 );
 const livingRoom = new Place(
-  "Living Room",
+  "living room",
   "dark blue, with a tired looking sofa.",
   "doorway"
 );
 const landing = new Place(
-  "Landing",
+  "landing",
   "long, with a high ceiling. There isn't much more to say about landings is there?",
   "doorway"
 );
@@ -521,7 +529,7 @@ const office = new Place(
 );
 const bedroom = new Place(
   "bedroom",
-  "a large bedroom, with dark blue walls and a big window overlooking a quiet road.",
+  "quite large, with dark blue walls and a big window overlooking a quiet road.",
   "doorway"
 );
 
@@ -581,7 +589,7 @@ const water = new Item("water", "wet and shiny", "Aha, some water! Yum!");
 const discoBall = new Item(
   "disco ball",
   "glittering",
-  "Yes! This is what I was looking for!"
+  "Yes! This is the disco ball that I was looking for!"
 );
 const partyLight = new Item(
   "party light",

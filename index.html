@@ -9,10 +9,10 @@
 </head>
 <body>
     <div class="md:max-w-[800px] mx-auto">
-        <div id="welcomePage" class="bg-gray-200 p-2 ">
+        <div id="welcomePage" class="bg-gray-200 p-2 hidden">
             <h1 class="font-bold text-2xl pb-[.5rem]">The Slug Game</h1>
             <hr class="h-1 my-1 bg-blue-900">
-            <p class="welcomeP">You are a slug, living in a beautiful lush garden somewhere on earth.</p>
+            <p class="welcomeP">You are a slug, living in a beautiful lush garden in Sheffield.</p>
             <p class="welcomeP">You and your slug companions like nothing more than having a good party, but unfortunately some necessary items have been picked up by a human and taken into "the house".</p>
             <p class="welcomeP">It is down to you to be the hero of the hour and get the party started once more.</p>
             <hr class="h-1 my-1 bg-blue-900">
@@ -30,7 +30,10 @@
             
 
         </div>
-        <div id="gamearea" class="grid gap-4 grid-cols-1 sm:grid-cols-12 hidden">
+        <div id="gamearea" class="grid gap-4 grid-cols-1 sm:grid-cols-12 ">
+            <div class="alertArea grid sm:col-span-12 bg-gray-200 p-2 h-48 text-center content-center">
+                <p id="alertText">~ Here you will find useful information ~</p>
+            </div>
             <div id="details" class="sm:col-span-8 bg-gray-200 p-2">
                 <div>
                     <h2 id="gameEndTitle" class="font-bold pb-4 gameEnd hidden"></h2>
