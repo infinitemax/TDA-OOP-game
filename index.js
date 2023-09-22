@@ -136,7 +136,7 @@ const mouse = new Friend(
   10,
   "mouse",
   [],
-  "I think you shouldn't go outside when it's sunny, make sure to check the weather first!",
+  "I think you shouldn't go outside when it's sunny, make sure to check the weather first! You can <strong>wait here</strong> for a while, if you need to.",
 )
 
 const spider = new Friend(
@@ -210,7 +210,7 @@ class Place {
       return `Nearby, you can see a <strong>${character.name}</strong>. They seem friendly so you could <strong>ask</strong> them something.`;
     }
 
-    // console.log(character)
+    
     else {
       return `Nearby, you can see a <strong>${character.name}</strong> ${character.description}. Be careful to avoid them seeing you: consider your commands wisely.`
     }
@@ -254,7 +254,6 @@ class Place {
         const commandArray = command.split(" ");
         const action = commandArray[0];
         const focus = commandArray[1];
-        console.log(`action was ${action}`)
 
         //check command has two words and if it does, whether it contains a valid action
         if (commandArray.length != 2) {
@@ -262,12 +261,12 @@ class Place {
         } else if (!player.actions.includes(action)) {
           alertArea.innerHTML = "That was an invalid action, try 'move' or 'collect'";
         } else if (
-          currentRoom.name === "Kitchen" &&
+          currentRoom.name === "kitchen" &&
           focus === "west" &&
           garden.weather["canGoOutside"] === false
         ) {
           alertArea.innerHTML = 
-            "You cannot go outside in this weather. You must wait until it starts raining."
+            "You cannot go outside in this weather, you'll get too dry."
           ;
         } else if (currentRoom.linkedCharacters.length > 0 && currentRoom.linkedCharacters[0].isEnemy && action != "sneak") {
 
@@ -288,7 +287,7 @@ class Place {
         userInput.value = "";
 
         if (
-          currentRoom.name === "Garden" &&
+          currentRoom.name === "garden" &&
           player.hasDiscoBall === true &&
           player.hasPartyLight
         ) {
@@ -320,7 +319,7 @@ class Place {
       return this;
     }
 
-    if (this.linkedPlaces[direction].name === "Garden" && garden.weather["canGoOutside"] === true) {
+    if (this.linkedPlaces[direction].name === "garden" && garden.weather["canGoOutside"] === true) {
       player.moisture += 15;
     }
     return this;
@@ -392,8 +391,10 @@ class Place {
     }
   }
 
-  wait() {
-    
+  wait(here) {
+    if (here === "here") {
+      alertArea.innerHTML = "I guess I'll just wait here for a bit."
+    }
   }
 
 
@@ -679,8 +680,11 @@ const goController = (action, focus) => {
         currentRoom.move(focus)
       } else if (focus === "thing") {
         currentRoom.collect(focus)
-      }
-      // if currentRoom character isEnemy, player must use sneak - sneak should enable either movement or collection, can I do this without writing a new method?
+      };
+      break;
+    case "wait":
+        currentRoom.wait(focus);
+        break;
     default:
       console.log(action);
   }

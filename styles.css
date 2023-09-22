@@ -3,9 +3,6 @@ body {
     padding: 1.5rem
 }
 
-p {
-    margin-bottom: .75rem;
-}
 
 input {
     border-width: 1px;
@@ -31,8 +28,10 @@ input {
 }
 
 .welcomeP {
-    padding-top: .4rem;
+    padding-top: 8px;
 }
+
+
 
 hr {
     padding: 0 12px
