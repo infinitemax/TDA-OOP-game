@@ -136,7 +136,7 @@ const mouse = new Friend(
   10,
   "mouse",
   [],
-  "I think you shouldn't go outside when it's sunny, make sure to check the weather first! You can <strong>wait here</strong> for a while, if you need to.",
+  "I don't think you should go outside when it's sunny, make sure to check the weather first! You can <strong>wait here</strong> for a while, if you need to.",
 )
 
 const spider = new Friend(
@@ -146,7 +146,7 @@ const spider = new Friend(
   10,
   "spider",
   [],
-  "Sometimes you need to be extra quiet - if there's a human around, try to <strong>sneak</strong>"
+  "Sometimes you need to be extra quiet - if there's a human around, try to <strong>sneak</strong>."
 )
 
 // create baddie
@@ -190,7 +190,7 @@ class Place {
   }
 
   describePlace() {
-    return `You are in a ${this.name}, which is ${this.description}`;
+    return `You are ${this.name}, which is ${this.description}`;
   }
 
   describeItems() {
@@ -352,7 +352,7 @@ class Place {
       }
 
       if(collectedItemArray[0].name === "small drip") {
-        player.moisture += 10;
+        player.moisture += 15;
       }
 
       if (collectedItemArray[0].name === "disco ball") {
@@ -484,52 +484,52 @@ class SecretPlace extends Place {
 //make some places
 
 const garden = new OutsidePlace(
-  "garden",
+  "in a garden",
   "not large, but contains many lush plants: an ideal home for a slug.",
   "doorway"
 );
 const kitchen = new Place(
-  "kitchen",
+  "in a kitchen",
   "reasonably tidy, with plenty of nooks to explore.",
   "doorway"
 );
 const hallway = new Place(
-  "hallway",
+  "in a hallway",
   "brightly lit, painted white, with a wobbly wooden floor.",
   "doorway"
 );
 const staircase = new Place(
-  "staircase",
+  "on a staircase",
   "steep and long, covered with a rough carpet made of some kind of plant fibre.",
   "staircase"
 );
 const diningRoom = new Place(
-  "dining room",
+  "in a dining room",
   "long, with blue walls, a dining set, more than a few cobwebs.",
   "doorway"
 );
 const livingRoom = new Place(
-  "living room",
+  "in a living room",
   "dark blue, with a tired looking sofa.",
   "doorway"
 );
 const landing = new Place(
-  "landing",
+  "on a landing",
   "long, with a high ceiling. There isn't much more to say about landings is there?",
   "doorway"
 );
 const bathroom = new Place(
-  "bathroom",
+  "in a bathroom",
   "well lit, with a bath, shower, basin and mirror, though you're not tall enough to look at your reflection.",
   "doorway"
 );
 const office = new Place(
-  "office",
+  "in an office",
   "messy, with a desk, computer, laundry and all manner of other bits and pieces. How does anyone get any work done in here?",
   "doorway"
 );
 const bedroom = new Place(
-  "bedroom",
+  "in a bedroom",
   "quite large, with dark blue walls and a big window overlooking a quiet road.",
   "doorway"
 );
@@ -584,7 +584,7 @@ const hat = new Item(
 const salt = new Item(
   "salt",
   "sparkling",
-  "Oh gosh, that was salt - I think I'm drying out faster, I'd better find some water"
+  "Oh gosh, that was <strong>salt</strong> - I think I'm drying out faster, I'd better find some water"
 );
 const water = new Item("water", "wet and shiny", "Aha, some water! Yum!");
 const discoBall = new Item(
@@ -610,7 +610,7 @@ diningRoom.linkItem(water);
 livingRoom.linkItem(discoBall);
 office.linkItem(partyLight);
 bedroom.linkItem(smallDrip);
-bathroom.linkItem(water);
+bathroom.linkItem(smallDrip);
 
 //#endregion
 
@@ -706,6 +706,8 @@ const changeName = (name) => {
 
 // a function to show the game area and populate player name.
 const startButtonPush = () => {
+  window.scrollTo(0, 0);
+  
   
   if (userName.length < 1) {
     alert("Please name your slug")
