@@ -610,6 +610,7 @@ diningRoom.linkItem(water);
 livingRoom.linkItem(discoBall);
 office.linkItem(partyLight);
 bedroom.linkItem(smallDrip);
+bathroom.linkItem(water);
 
 //#endregion
 
