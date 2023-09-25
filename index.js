@@ -253,6 +253,19 @@ class Place {
 
 
         command = userInput.value.toLowerCase();
+        
+        // cheat code to refill moisture... added in a hurry so my mum can play without dying!
+
+        if (command === "drink up") {
+          player.moisture = 100;
+          currentRoom.populatePlaceDetails();
+          player.populatePlayerDetails();
+        
+          userInput.value = "";
+
+          return this;
+        }
+
 
         //split into array of commands
         const commandArray = command.split(" ");
@@ -446,7 +459,7 @@ class OutsidePlace extends Place {
         canGoOutside: true,
       },
       {
-        currentWeather: "the rain is comming down fast",
+        currentWeather: "the rain is coming down fast",
         canGoOutside: true,
       },
       {
