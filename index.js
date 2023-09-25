@@ -166,8 +166,9 @@ const programmer = new Enemy(
 //#region THE PLACES AND THINGS
 
 class Place {
-  constructor(name, description, entrance) {
+  constructor(name, describeName, description, entrance) {
     this.name = name;
+    this.describeName = describeName;
     this.description = description;
     this.entrance = entrance;
     this.hasBeenVisited = false;
@@ -190,7 +191,7 @@ class Place {
   }
 
   describePlace() {
-    return `You are ${this.name}, which is ${this.description}`;
+    return `You are ${this.describeName}, which is ${this.description}`;
   }
 
   describeItems() {
@@ -436,8 +437,8 @@ class Place {
 }
 
 class OutsidePlace extends Place {
-  constructor(name, description, entrance) {
-    super(name, description, entrance);
+  constructor(name, describeName, description, entrance) {
+    super(name, describeName, description, entrance);
     this.hasBeenVisited = true;
     this.weatherOptions = [
       {
@@ -487,51 +488,61 @@ class SecretPlace extends Place {
 //make some places
 
 const garden = new OutsidePlace(
+  "garden",
   "in a garden",
   "not large, but contains many lush plants: an ideal home for a slug.",
   "doorway"
 );
 const kitchen = new Place(
+  "kitchen",
   "in a kitchen",
   "reasonably tidy, with plenty of nooks to explore.",
   "doorway"
 );
 const hallway = new Place(
+  "hallway",
   "in a hallway",
   "brightly lit, painted white, with a wobbly wooden floor.",
   "doorway"
 );
 const staircase = new Place(
+  "staircase",
   "on a staircase",
   "steep and long, covered with a rough carpet made of some kind of plant fibre.",
   "staircase"
 );
 const diningRoom = new Place(
+  "dining room",
   "in a dining room",
   "long, with blue walls, a dining set, more than a few cobwebs.",
   "doorway"
 );
 const livingRoom = new Place(
+  "living room",
   "in a living room",
   "dark blue, with a tired looking sofa.",
   "doorway"
 );
 const landing = new Place(
+  "landing",
   "on a landing",
   "long, with a high ceiling. There isn't much more to say about landings is there?",
   "doorway"
 );
 const bathroom = new Place(
+  "bathroom",
   "in a bathroom",
   "well lit, with a bath, shower, basin and mirror, though you're not tall enough to look at your reflection.",
   "doorway"
 );
 const office = new Place(
+  "office",
   "in an office",
   "messy, with a desk, computer, laundry and all manner of other bits and pieces. How does anyone get any work done in here?",
   "doorway"
 );
 const bedroom = new Place(
+  "bedroom",
   "in a bedroom",
   "quite large, with dark blue walls and a big window overlooking a quiet road.",
   "doorway"
