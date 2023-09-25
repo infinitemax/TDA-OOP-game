@@ -246,8 +246,11 @@ class Place {
     // get command
     let command = "";
     userInput.addEventListener("keydown", (e) => {
+      window.scrollTo(0, 0);
       if (e.key === "Enter") {
         // get command
+
+
         command = userInput.value.toLowerCase();
 
         //split into array of commands
